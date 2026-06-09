@@ -3,7 +3,16 @@
 This file is your running build journal. Check off tasks as you complete them, log blockers, and record decisions. It doubles as a portfolio narrative for anyone reading the repo.
 
 > **Phase order:** Screener first, auth last. The project is visually demoable after Phase 3.  
-> **Auto-commit:** The agent runs `git add -A && git commit && git push` at the end of every phase before proceeding.
+> **Small-step commits:** The agent runs `git add -A && git commit && git push` after every small verified step, not only at phase boundaries, so breaking changes can be reverted cleanly.
+
+## Commit discipline
+
+- Work in small, independently revertible steps.
+- Commit one coherent change at a time: one route group, one component slice, one schema change, one test-backed utility, or one documentation/config update.
+- Run the narrowest relevant verification before each commit and mention it in the commit body.
+- Push every commit immediately.
+- Keep phase milestone commits only as final markers after all acceptance criteria for that phase pass.
+- If a change breaks verification, fix it before committing; do not commit known-broken work unless the commit is explicitly a failing RED test in a TDD cycle.
 
 ---
 

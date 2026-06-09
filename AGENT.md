@@ -29,19 +29,43 @@ Auth is intentionally last. Phases 4–5 use a development auth stub (`X-User-Id
 
 ---
 
-## Auto-commit and push — fully autonomous, no confirmation
+## Small-step commits and push — fully autonomous, no confirmation
 
-The agent executes the commit and push sequence automatically at the end of every phase. **Do not ask the user for permission. Do not announce that you are about to commit. Do not wait for approval. Just run the commands.**
+The agent works in small, independently revertible steps and executes the commit and push sequence automatically after each verified step, not only at the end of a phase. **Do not ask the user for permission. Do not announce that you are about to commit. Do not wait for approval. Just run the commands.**
+
+A step should be small enough that reverting its commit is safe and obvious. Prefer commits that contain one coherent change, such as:
+
+- one schema/model migration
+- one indicator or utility with tests
+- one API route group
+- one frontend component/page slice
+- one bug fix with its regression test
+- one documentation/configuration update
+
+Before each step commit, run the narrowest relevant verification command. Examples: a specific Vitest file for an indicator change, `corepack pnpm --filter api typecheck` for API-only changes, `corepack pnpm --filter web build` for frontend-only changes, or full `corepack pnpm build && corepack pnpm test` before larger integration commits.
 
 The only time the agent stops is if `git push` returns a non-zero exit code (e.g. no remote configured, auth failure). In that case print a single clear error line and halt. Do not ask what to do — just stop and report.
 
 ```bash
 git add -A
-git commit -m "phase(N): <short description>" -m "- <key file or feature 1>" -m "- <key file or feature 2>"
+git commit -m "<type>(scope): <small verified change>" -m "- <verification command run>" -m "- <revert boundary / affected area>"
 git push
 ```
 
-### Commit message format (Conventional Commits + phase tag)
+Phase-completion commits are still allowed when a phase is fully accepted, but they are milestones only. Do not batch an entire phase into a single commit.
+
+### Commit message format
+
+Use Conventional Commits for small steps:
+
+```
+feat(api): add stock detail route
+
+- Verified with corepack pnpm --filter api typecheck
+- Revert boundary: apps/api/src/routes/stocks.ts and route registration
+```
+
+Use the phase tag only for final phase milestone commits:
 
 ```
 phase(N): <imperative summary under 72 chars>
@@ -50,7 +74,7 @@ phase(N): <imperative summary under 72 chars>
 - <acceptance criterion met>
 ```
 
-### Required commit per phase
+### Required phase milestone commit
 
 | Phase | Required commit message |
 |---|---|
@@ -61,7 +85,7 @@ phase(N): <imperative summary under 72 chars>
 | 5 | `phase(5): docker compose, README, Railway deployment` |
 | 6 | `phase(6): JWT auth, refresh tokens, protected routes` |
 
-The agent moves to the next phase immediately after a successful push, without pausing or summarising.
+The agent moves to the next phase immediately after the phase acceptance criteria are met and the phase milestone commit has been pushed, without pausing or summarising.
 
 ### Git setup (run once before Phase 1)
 
@@ -99,7 +123,7 @@ These are non-negotiable. Violating any of them will cause a pull request to be 
 5. **Error handling is explicit** — no unhandled promise rejections. Every async route handler uses Fastify's built-in error handler or a `try/catch` that calls `reply.send(error)`.
 6. **Indicator functions are pure** — functions in `packages/shared/src/indicators/` must take arrays of numbers and return numbers. No database calls, no side effects, no I/O.
 7. **Tests for indicators are required** — every function in `packages/shared/src/indicators/` must have a corresponding Vitest test.
-8. **Commits and pushes are autonomous** — run `git add -A && git commit && git push` immediately when all acceptance criteria for a phase are met. Never ask for permission, never announce the commit, never wait for approval. No phase is skipped.
+8. **Commits and pushes are autonomous and small-step** — run `git add -A && git commit && git push` after every small verified step so breaking changes can be reverted cleanly. Never ask for permission, never announce the commit, never wait for approval. No phase is skipped.
 
 ---
 
