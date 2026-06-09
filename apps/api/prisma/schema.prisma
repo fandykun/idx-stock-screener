@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String         @id @default(cuid())
+  email             String         @unique
+  passwordHash      String
+  telegramId        String?        @unique
+  telegramLinkToken String?        @unique
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  refreshTokens     RefreshToken[]
+  watchlists        Watchlist[]
+  alerts            Alert[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Stock {
+  ticker      String       @id
+  name        String
+  sector      String
+  candles     Candle[]
+  fundamental Fundamental?
+  watchlists  Watchlist[]
+  alerts      Alert[]
+}
+
+model Candle {
+  id        Int      @id @default(autoincrement())
+  ticker    String
+  timestamp DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    BigInt
+  stock     Stock    @relation(fields: [ticker], references: [ticker])
+
+  @@unique([ticker, timestamp])
+  @@index([ticker, timestamp(sort: Desc)])
+}
+
+model Fundamental {
+  ticker    String   @id
+  pe        Float?
+  pbv       Float?
+  roe       Float?
+  der       Float?
+  eps       Float?
+  marketCap BigInt?
+  updatedAt DateTime @updatedAt
+  stock     Stock    @relation(fields: [ticker], references: [ticker])
+}
+
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  ticker    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock     Stock    @relation(fields: [ticker], references: [ticker])
+
+  @@unique([userId, ticker])
+}
+
+model Alert {
+  id        String    @id @default(cuid())
+  userId    String
+  ticker    String
+  type      AlertType
+  metric    String
+  operator  String
+  threshold Float
+  active    Boolean   @default(true)
+  lastFired DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock     Stock     @relation(fields: [ticker], references: [ticker])
+}
+
+enum AlertType {
+  TECHNICAL
+  FUNDAMENTAL
+}

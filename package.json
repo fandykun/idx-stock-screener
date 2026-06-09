@@ -1,0 +1,26 @@
+{
+  "name": "idx-stock-screener",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Full-stack IDX stock screener with technical and fundamental filters.",
+  "type": "module",
+  "packageManager": "pnpm@11.5.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "corepack pnpm --parallel --filter api --filter web dev",
+    "build": "corepack pnpm -r build",
+    "test": "corepack pnpm -r test",
+    "test:coverage": "corepack pnpm --filter @idx-screener/shared test:coverage",
+    "typecheck": "corepack pnpm -r typecheck",
+    "lint": "corepack pnpm -r lint",
+    "seed": "corepack pnpm --filter api seed"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
