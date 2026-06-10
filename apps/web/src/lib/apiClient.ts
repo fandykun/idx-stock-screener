@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-export const apiClient = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000' })
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
+  headers: { 'X-User-Id': 'demo-user' },
+})
 
 apiClient.interceptors.response.use(
   (response) => response,

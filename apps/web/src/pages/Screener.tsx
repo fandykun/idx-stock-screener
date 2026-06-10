@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { AppNav } from '../components/AppNav'
 import { FilterBar } from '../components/FilterBar'
 import { StockTable } from '../components/StockTable'
 import { useScreener, type FilterRule } from '../hooks/useScreener'
@@ -12,6 +13,7 @@ export function Screener() {
   const rows = useMemo(() => data?.data ?? [], [data])
   return (
     <main>
+      <AppNav />
       <header className="hero"><p>IDX Stock Screener</p><h1>Find Indonesian stocks by valuation, momentum, and risk signals.</h1></header>
       <FilterBar filters={filters} setFilters={(next) => { setPage(1); setFilters(next) }} />
       {isLoading ? <div className="panel skeleton">Loading screener results…</div> : null}
