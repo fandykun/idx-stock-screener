@@ -14,6 +14,7 @@
     "build": "corepack pnpm -r build",
     "test": "corepack pnpm -r test",
     "test:coverage": "corepack pnpm --filter @idx-screener/shared test:coverage",
+    "smoke": "node scripts/smoke.mjs",
     "typecheck": "corepack pnpm -r typecheck",
     "lint": "corepack pnpm -r lint",
     "seed": "corepack pnpm --filter api seed"
