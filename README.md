@@ -131,7 +131,7 @@ Latest verified commands:
 
 ## Architecture notes
 
-See [AGENT.md](AGENT.md), [PRD.md](PRD.md), and [BUILD.md](BUILD.md) for implementation phases, architecture decisions, and development workflow.
+See [AGENT.md](AGENT.md), [PRD.md](PRD.md), [BUILD.md](BUILD.md), and [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for implementation phases, architecture decisions, deployment steps, and development workflow.
 
 ## License
 

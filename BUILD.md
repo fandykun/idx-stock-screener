@@ -379,6 +379,9 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 
 **Deployment (Railway)**
 - [ ] Railway project created with managed Postgres + Redis
+- [x] API deployment build/start commands documented
+- [x] Web deployment build/start commands documented
+- [x] Env vars reference documented for Railway
 - [ ] API deployed, start command: `pnpm --filter api start`
 - [ ] Web deployed as static site, build: `pnpm --filter web build`, publish: `apps/web/dist`
 - [ ] All env vars set in Railway dashboard
