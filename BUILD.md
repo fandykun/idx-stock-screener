@@ -20,12 +20,19 @@ This file is your running build journal. Check off tasks as you complete them, l
 
 | Phase | Name | Status | Committed | Live demo |
 |---|---|---|---|---|
-| 1 | Data layer — scraper + database | Not started | — | — |
-| 2 | Screener engine + indicator API | Not started | — | — |
-| 3 | React frontend — screener + stock detail | Not started | — | **First visual demo** |
-| 4 | Watchlist, alerts, Telegram bot | Not started | — | — |
-| 5 | Polish and deployment | Not started | — | **Public URL** |
+| 1 | Data layer — scraper + database | Demo scaffold complete; production DB flow pending | `a78c005` | — |
+| 2 | Screener engine + indicator API | Complete with deterministic demo data | `a78c005` | API demoable |
+| 3 | React frontend — screener + stock detail | Complete | `a78c005` | **First visual demo** |
+| 4 | Watchlist, alerts, Telegram bot | Complete with auth stub and in-memory personal state | `86ecc78` | Personal flows demoable |
+| 5 | Polish and deployment | In progress | `c57707b` smoke check | **Public URL** |
 | 6 | Authentication | Not started | — | — |
+
+Current baseline before continuing Phase 5:
+
+- Latest pushed commit: `c57707b chore(smoke): add deployment smoke check`.
+- Verified commands: `corepack pnpm build`, `corepack pnpm test`, `corepack pnpm smoke`, `git diff --check`.
+- Docker Engine and Compose are available on this host.
+- Phase 5 should proceed in small commits: local Docker verification, demo seed/data polish, README/screenshots, deployment configuration, then Railway deployment.
 
 ---
 
