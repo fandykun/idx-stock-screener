@@ -421,6 +421,10 @@ git push
 Date: 2026-06-10
 Issue: `docker compose up -d` could not fully start on the shared host because an existing Redis service already binds `127.0.0.1:6379`.
 Resolution: Verified `docker compose config --quiet`, cleaned up the partial compose stack with `docker compose down --volumes --remove-orphans`, and left compose-up validation pending for a clean host/CI environment.
+
+Date: 2026-06-10
+Issue: Railway CLI is not installed globally and this shell is not authenticated to Railway. `npx -y @railway/cli@5.8.0 --version` works, but `whoami` returns unauthorized.
+Resolution: Deployment is ready to run once Railway authentication/project access is provided; use `npx -y @railway/cli@5.8.0 login` or provide a Railway token via a secure environment variable, never committed to the repo.
 ```
 
 ### Decisions made
