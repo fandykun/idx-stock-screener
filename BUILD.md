@@ -373,9 +373,9 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 - [ ] Coverage ≥ 80% on `packages/shared/src/indicators/`
 
 **Demo seed**
-- [ ] `apps/api/prisma/demoSeed.ts` creates demo user (`demo@idx-screener.app` / `demo1234`)
-- [ ] Demo watchlist: BBCA, TLKM, ASII, BBRI
-- [ ] Demo alerts: RSI < 30 on BBCA, P/E < 10 on ASII
+- [x] `apps/api/prisma/demoSeed.ts` creates demo user (`demo@idx-screener.app`; auth remains stubbed until Phase 6)
+- [x] Demo watchlist: BBCA, TLKM, ASII, BBRI
+- [x] Demo alerts: RSI < 30 on BBCA, P/E < 10 on ASII
 
 **Deployment (Railway)**
 - [ ] Railway project created with managed Postgres + Redis

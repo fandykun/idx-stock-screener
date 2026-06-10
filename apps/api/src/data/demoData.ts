@@ -45,8 +45,9 @@ const tickers = [
   ['GGRM', 'Gudang Garam', 'Consumer Staples', 7.9, 0.48, 0.062, 0.38, 2550, 28000000000000],
 ] as const
 
+const demoCandleEndTimestamp = Date.UTC(2026, 5, 7)
+
 function buildCandles(ticker: string, seed: number): Candle[] {
-  const now = Date.now()
   const candles: Candle[] = []
   let close = seed
   for (let index = 139; index >= 0; index -= 1) {
@@ -59,7 +60,7 @@ function buildCandles(ticker: string, seed: number): Candle[] {
     const low = Math.min(open, nextClose) * 0.992
     candles.push({
       ticker,
-      timestamp: new Date(now - index * 24 * 60 * 60 * 1000).toISOString(),
+      timestamp: new Date(demoCandleEndTimestamp - index * 24 * 60 * 60 * 1000).toISOString(),
       open: Math.round(open),
       high: Math.round(high),
       low: Math.round(low),

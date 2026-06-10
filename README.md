@@ -41,6 +41,7 @@ The API currently ships with deterministic demo IDX data so it runs without loca
 corepack pnpm install
 corepack pnpm build
 corepack pnpm test
+corepack pnpm seed:demo
 corepack pnpm --filter api start
 corepack pnpm --filter web preview -- --port 4173
 ```

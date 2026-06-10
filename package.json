@@ -17,7 +17,8 @@
     "smoke": "node scripts/smoke.mjs",
     "typecheck": "corepack pnpm -r typecheck",
     "lint": "corepack pnpm -r lint",
-    "seed": "corepack pnpm --filter api seed"
+    "seed": "corepack pnpm --filter api seed",
+    "seed:demo": "corepack pnpm --filter api seed:demo"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
