@@ -79,6 +79,23 @@ export function listAlerts(userId: string): AlertRecord[] {
   return [...getUserState(userId).alerts]
 }
 
+export function listAllAlerts(): AlertRecord[] {
+  return [...users.values()].flatMap((state) => state.alerts)
+}
+
+export function markAlertChecked(alertId: string, checkedAt: Date): AlertRecord {
+  const alert = findAlert(alertId)
+  if (!alert) throw Object.assign(new Error(`Alert ${alertId} not found`), { statusCode: 404 })
+  alert.lastCheckedAt = checkedAt.toISOString()
+  return alert
+}
+
+export function markAlertFired(alertId: string, firedAt: Date): AlertRecord {
+  const alert = markAlertChecked(alertId, firedAt)
+  alert.lastFired = firedAt.toISOString()
+  return alert
+}
+
 export function updateAlert(userId: string, alertId: string, patch: AlertPatchInput): AlertRecord {
   const alert = findAlert(alertId)
   if (!alert) throw Object.assign(new Error(`Alert ${alertId} not found`), { statusCode: 404 })
