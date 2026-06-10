@@ -400,9 +400,9 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 - [x] MIT license file added
 
 **GitHub**
-- [ ] Repository is public
-- [ ] `docs/PRD.md`, `docs/AGENT.md`, `docs/BUILD.md` committed
-- [ ] All phase commits visible in git log
+- [x] Repository is public
+- [x] `PRD.md`, `AGENT.md`, `BUILD.md`, and `docs/DEPLOYMENT.md` committed
+- [x] All phase commits visible in git log
 
 **Auto-commit** (agent runs this — do not skip)
 ```bash
