@@ -3,6 +3,7 @@ import helmet from '@fastify/helmet'
 import Fastify, { type FastifyInstance } from 'fastify'
 import { ZodError } from 'zod'
 import { AuthStubError } from './lib/authStub.js'
+import { websocketPlugin } from './plugins/websocket.js'
 import { alertRoutes } from './routes/alerts.js'
 import { screenerRoutes } from './routes/screener.js'
 import { settingsRoutes } from './routes/settings.js'
@@ -14,6 +15,7 @@ export async function createApp(): Promise<FastifyInstance> {
 
   await app.register(helmet)
   await app.register(cors, { origin: process.env.WEB_ORIGIN ?? true })
+  await app.register(websocketPlugin)
   await app.register(stockRoutes)
   await app.register(screenerRoutes)
   await app.register(watchlistRoutes)
