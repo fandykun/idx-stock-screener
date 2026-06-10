@@ -362,15 +362,15 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 ### Checklist
 
 **Docker Compose**
-- [ ] `docker-compose.yml` at repo root with `postgres:15-alpine` and `redis:7-alpine`
-- [ ] `docker compose up -d` starts both cleanly
-- [ ] `pnpm dev` (repo root) starts API and web concurrently
+- [x] `docker-compose.yml` at repo root with `postgres:15-alpine` and `redis:7-alpine`
+- [ ] `docker compose up -d` starts both cleanly (blocked on this host by existing Redis bound to `127.0.0.1:6379`; compose config itself validates)
+- [x] `pnpm dev` (repo root) starts API and web concurrently
 - [ ] Fresh checkout → `docker compose up -d` → `pnpm install` → `pnpm dev` works in < 10 min
 
 **Tests**
-- [ ] `pnpm test` runs all Vitest indicator tests
-- [ ] All tests pass
-- [ ] Coverage ≥ 80% on `packages/shared/src/indicators/`
+- [x] `pnpm test` runs all Vitest indicator tests
+- [x] All tests pass
+- [x] Coverage ≥ 80% on `packages/shared/src/indicators/`
 
 **Demo seed**
 - [x] `apps/api/prisma/demoSeed.ts` creates demo user (`demo@idx-screener.app`; auth remains stubbed until Phase 6)
@@ -385,15 +385,15 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 - [ ] Live URL loads screener with real IDX data
 
 **README.md**
-- [ ] One-line description + live demo badge at top
-- [ ] Screener screenshot embedded
-- [ ] Stock detail screenshot embedded
-- [ ] Feature list
-- [ ] Tech stack table
-- [ ] 5-command local setup (clone → install → docker up → env → dev)
-- [ ] Env vars reference
-- [ ] `pnpm test` command documented
-- [ ] Link to `docs/AGENT.md` for architecture detail
+- [ ] One-line description + live demo badge at top (live demo badge pending URL)
+- [x] Screener screenshot embedded
+- [x] Stock detail screenshot embedded
+- [x] Feature list
+- [x] Tech stack table
+- [x] 5-command local setup (clone → install → docker up → env → dev)
+- [x] Env vars reference
+- [x] `pnpm test` command documented
+- [x] Link to `AGENT.md` for architecture detail
 - [x] MIT license file added
 
 **GitHub**
@@ -415,9 +415,9 @@ git push
 
 ### Blockers / notes
 ```
-Date:
-Issue:
-Resolution:
+Date: 2026-06-10
+Issue: `docker compose up -d` could not fully start on the shared host because an existing Redis service already binds `127.0.0.1:6379`.
+Resolution: Verified `docker compose config --quiet`, cleaned up the partial compose stack with `docker compose down --volumes --remove-orphans`, and left compose-up validation pending for a clean host/CI environment.
 ```
 
 ### Decisions made

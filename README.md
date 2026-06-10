@@ -1,54 +1,82 @@
 # IDX Stock Screener
 
-A full-stack IDX stock screening demo with a Fastify API, shared TypeScript indicator package, and React/Vite frontend.
+A full-stack Indonesian stock screener demo for filtering IDX names by valuation, momentum, and risk signals.
 
-## Current scope
+![Screener screenshot](docs/assets/screener.svg)
 
-Implemented through Phase 4 of the PRD:
+## Features
 
 - Public screener API: `/screener`, `/stocks`, `/stocks/:ticker`, `/stocks/:ticker/candles`
 - Technical indicators: RSI-14, SMA, EMA, MACD, Bollinger Bands, volume surge
 - Fundamental filters: P/E, P/BV, ROE, DER, market cap tier, sector
 - React screener page with sortable table and multi-rule filters
-- Stock detail page with candlestick chart, timeframe tabs, MA/Bollinger overlays, technical and fundamental panels
-- Auth-stubbed watchlist API and `/watchlist` page
-- Auth-stubbed alerts API and `/alerts` page
+- Stock detail page with chart controls, technical snapshot, and fundamental context
+- Auth-stubbed watchlist and alerts flows for the Phase 4/5 demo
 - `/settings` page with Telegram link-token generation
 - WebSocket price feed at `/ws/prices`
 - Alert evaluator with 4-hour cooldown logic
-- Telegram bot scaffold for future account linking and alert delivery
-- Prisma schema and seed script matching the PRD data model
+- Prisma schema and deterministic demo seed for local PostgreSQL
 - Yahoo Finance scraper module with retry logic and IDX `.JK` ticker support
 
-The API currently ships with deterministic demo IDX data so it runs without local PostgreSQL/Redis services. Watchlists, alerts, and Telegram link tokens are stored in memory for the Phase 4 demo and will be moved to PostgreSQL in a later production-readiness step.
+![Stock detail screenshot](docs/assets/stock-detail.svg)
 
-## Stack
+## Current scope
 
-- Node.js + TypeScript strict mode
-- Fastify API
-- React 18 + Vite
-- lightweight-charts
-- Zod validation
-- Vitest
-- Prisma schema for PostgreSQL
-- WebSocket price feed via `@fastify/websocket`
-- BullMQ/Redis dependency scaffold for alert delivery
-- grammY Telegram bot scaffold
+Implemented through Phase 5 local-dev polish. The API ships with deterministic demo IDX data so it can run without PostgreSQL/Redis, while the Prisma schema and demo seed are available for database-backed local checks.
 
-## Local development
+Watchlists, alerts, and Telegram link tokens are still stored in memory for the demo. Production persistence, real Telegram delivery, and JWT/refresh-token auth are intentionally deferred to later phases.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| API | Node.js, TypeScript strict mode, Fastify |
+| Web | React 18, Vite, React Router, TanStack Query |
+| Charts | lightweight-charts |
+| Validation | Zod |
+| Data model | Prisma, PostgreSQL |
+| Jobs/realtime | BullMQ/Redis scaffold, WebSocket price feed |
+| Bot scaffold | grammY |
+| Testing | Vitest |
+| Local services | Docker Compose with PostgreSQL and Redis |
+
+## 5-command local setup
 
 ```bash
-corepack pnpm install
-corepack pnpm build
-corepack pnpm test
-corepack pnpm seed:demo
-corepack pnpm --filter api start
-corepack pnpm --filter web preview -- --port 4173
+git clone https://github.com/fandykun/idx-stock-screener.git
+cd idx-stock-screener && corepack pnpm install
+docker compose up -d
+cp apps/api/.env.example apps/api/.env
+corepack pnpm build && corepack pnpm test && corepack pnpm seed:demo && corepack pnpm dev
 ```
 
-Open `http://localhost:4173`.
+Open `http://localhost:5173` for Vite dev, or run the production preview with:
+
+```bash
+corepack pnpm --filter api start
+PORT=4173 corepack pnpm --filter web start
+```
 
 The demo web app sends `X-User-Id: demo-user` for stub-authenticated routes. For direct API calls to watchlist, alerts, and settings endpoints, include the same header.
+
+## Environment variables
+
+### API (`apps/api/.env`)
+
+| Variable | Example | Required | Notes |
+|---|---|---|---|
+| `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/idx_screener` | For Prisma seed/scraper | Used by Prisma scripts and future persistence work. |
+| `REDIS_URL` | `redis://localhost:6379` | For future alert jobs | Redis is scaffolded for BullMQ alert delivery. |
+| `API_PORT` | `3000` | No | API defaults to `3000`. |
+| `WEB_ORIGIN` | `http://localhost:5173` | No | CORS origin. Defaults to permissive development behavior. |
+| `LOG_LEVEL` | `info` | No | Fastify logger level. |
+
+### Web
+
+| Variable | Example | Required | Notes |
+|---|---|---|---|
+| `VITE_API_URL` | `http://localhost:3000` | No | Browser API base URL. |
+| `PORT` | `4173` | No | Used by `corepack pnpm --filter web start`. |
 
 ## API examples
 
@@ -95,14 +123,23 @@ API_BASE_URL=https://your-api.example.com WEB_BASE_URL=https://your-web.example.
 
 Latest verified commands:
 
-- `corepack pnpm build` — passes
-- `corepack pnpm test` — passes
-- `corepack pnpm test:coverage` — indicator package line coverage is 100%, statement coverage is 91.48%
-- Browser smoke test: `/` renders screener table; `/stock/BBCA` renders stock detail with chart controls; `/watchlist`, `/alerts`, and `/settings` exercise Phase 4 personal flows
+- `corepack pnpm build`
+- `corepack pnpm test`
+- `corepack pnpm test:coverage`
+- `corepack pnpm seed:demo` twice to confirm idempotent demo data
+- `corepack pnpm smoke` against local API and web preview
+
+## Architecture notes
+
+See [AGENT.md](AGENT.md), [PRD.md](PRD.md), and [BUILD.md](BUILD.md) for implementation phases, architecture decisions, and development workflow.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ## Next production work
 
-- Deploy API and web publicly for Phase 5.
+- Deploy API and web publicly for Phase 5 once Railway access is available.
 - Move demo/in-memory state to PostgreSQL.
 - Wire Redis/BullMQ for alert delivery retries.
 - Implement real Telegram account linking and commands.
