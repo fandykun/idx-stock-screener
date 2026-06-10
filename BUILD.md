@@ -394,7 +394,7 @@ Live public demo on Railway, complete README, Docker Compose for one-command loc
 - [ ] Env vars reference
 - [ ] `pnpm test` command documented
 - [ ] Link to `docs/AGENT.md` for architecture detail
-- [ ] MIT license file added
+- [x] MIT license file added
 
 **GitHub**
 - [ ] Repository is public
