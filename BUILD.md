@@ -466,11 +466,11 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] All `getStubUserId(request)` replaced with `request.user.userId`
 - [x] `preHandler: [app.authenticate]` added to all personal route handlers
 - [x] `apps/api/src/lib/authStub.ts` deleted
-- [ ] Frontend `apiClient.ts` — hardcoded `X-User-Id` header removed
+- [x] Frontend `apiClient.ts` — hardcoded `X-User-Id` header removed
 
 **Frontend**
 - [ ] `useAuth.ts` hook — `login()`, `logout()`, `register()`, `isAuthenticated`
-- [ ] `apiClient.ts` — request interceptor attaches `Authorization: Bearer <token>`
+- [x] `apiClient.ts` — request interceptor attaches `Authorization: Bearer ***`
 - [ ] `apiClient.ts` — response interceptor: on 401, POST `/auth/refresh`, retry once; on second 401, logout
 - [ ] `/login` page — form, submits, stores access token in memory, redirects to `/`
 - [ ] `/register` page — form, submits, redirects to `/login`
