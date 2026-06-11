@@ -20,9 +20,14 @@ A full-stack Indonesian stock screener demo for filtering IDX names by valuation
 
 ![Stock detail screenshot](docs/assets/stock-detail.svg)
 
+## Live demo
+
+- Web: https://web-production-416351.up.railway.app
+- API health: https://api-production-9f35.up.railway.app/health
+
 ## Current scope
 
-Implemented through Phase 5 local-dev polish. The API ships with deterministic demo IDX data so it can run without PostgreSQL/Redis, while the Prisma schema and demo seed are available for database-backed local checks.
+Implemented through Phase 5 deployment. The API ships with deterministic demo IDX data so it can run without PostgreSQL/Redis, while the Prisma schema and demo seed are available for database-backed local checks.
 
 Watchlists, alerts, and Telegram link tokens are still stored in memory for the demo. Production persistence, real Telegram delivery, and JWT/refresh-token auth are intentionally deferred to later phases.
 
@@ -116,7 +121,7 @@ The smoke script checks:
 Environment overrides:
 
 ```bash
-API_BASE_URL=https://your-api.example.com WEB_BASE_URL=https://your-web.example.com corepack pnpm smoke
+API_BASE_URL=https://api-production-9f35.up.railway.app WEB_BASE_URL=https://web-production-416351.up.railway.app corepack pnpm smoke
 ```
 
 ## Verification
@@ -128,6 +133,7 @@ Latest verified commands:
 - `corepack pnpm test:coverage`
 - `corepack pnpm seed:demo` twice to confirm idempotent demo data
 - `corepack pnpm smoke` against local API and web preview
+- `API_BASE_URL=https://api-production-9f35.up.railway.app WEB_BASE_URL=https://web-production-416351.up.railway.app corepack pnpm smoke`
 
 ## Architecture notes
 
@@ -139,7 +145,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Next production work
 
-- Deploy API and web publicly for Phase 5 once Railway access is available.
 - Move demo/in-memory state to PostgreSQL.
 - Wire Redis/BullMQ for alert delivery retries.
 - Implement real Telegram account linking and commands.

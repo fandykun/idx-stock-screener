@@ -20,6 +20,8 @@ Do not commit generated database URLs, Redis URLs, bot tokens, Railway tokens, o
 
 ## API service
 
+Live URL: https://api-production-9f35.up.railway.app
+
 Use the repository root as the service root.
 
 Build command:
@@ -45,7 +47,7 @@ Environment variables:
 ```bash
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 REDIS_URL=${{Redis.REDIS_URL}}
-WEB_ORIGIN=https://your-web-service.up.railway.app
+WEB_ORIGIN=https://web-production-416351.up.railway.app
 LOG_LEVEL=info
 ```
 
@@ -56,6 +58,10 @@ Notes:
 - `WEB_ORIGIN` should be the final public web origin to keep CORS narrow.
 
 ## Web service
+
+Live URL: https://web-production-416351.up.railway.app
+
+The current Railway service deploys `apps/web` as the root path using Vite preview. Keep `apps/web/tsconfig.json` self-contained because this deployment path does not include the repository root `tsconfig.base.json`.
 
 Use the repository root as the service root.
 
