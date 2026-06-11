@@ -37,4 +37,33 @@ describe('apiClient auth headers', () => {
     expect(getAccessToken()).toBe('access-token')
     expect(headerValue(capturedConfig, 'Authorization')).toBe('Bearer access-token')
   })
+
+  it('refreshes expired access tokens once and retries the original request', async () => {
+    const requestedUrls: string[] = []
+    const authorizationHeaders: unknown[] = []
+    setAuthTokens({ accessToken: 'expired-token', refreshToken: 'refresh-token' })
+    apiClient.defaults.adapter = async (config) => {
+      requestedUrls.push(config.url ?? '')
+      authorizationHeaders.push(headerValue(config, 'Authorization'))
+      if (config.url === '/watchlist' && requestedUrls.filter((url) => url === '/watchlist').length === 1) {
+        return Promise.reject({
+          isAxiosError: true,
+          config,
+          response: { status: 401, data: { message: 'Unauthorized' }, statusText: 'Unauthorized', headers: {}, config },
+          message: 'Unauthorized',
+        })
+      }
+      if (config.url === '/auth/refresh') {
+        return { data: { accessToken: 'fresh-token', refreshToken: 'fresh-refresh-token' }, status: 200, statusText: 'OK', headers: {}, config }
+      }
+      return { data: { data: [] }, status: 200, statusText: 'OK', headers: {}, config }
+    }
+
+    const response = await apiClient.get('/watchlist')
+
+    expect(response.data).toEqual({ data: [] })
+    expect(requestedUrls).toEqual(['/watchlist', '/auth/refresh', '/watchlist'])
+    expect(getAccessToken()).toBe('fresh-token')
+    expect(authorizationHeaders).toEqual(['Bearer expired-token', 'Bearer expired-token', 'Bearer fresh-token'])
+  })
 })

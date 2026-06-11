@@ -1,8 +1,13 @@
 import axios from 'axios'
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
 
 interface AuthTokens {
   accessToken: string
   refreshToken: string
+}
+
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean
 }
 
 const ACCESS_TOKEN_KEY = 'idx-screener.accessToken'
@@ -72,15 +77,38 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
+function errorMessage(error: AxiosError): string {
+  return typeof error.response?.data === 'object' && error.response.data !== null && 'message' in error.response.data
+    ? String(error.response.data.message)
+    : error.message
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: unknown) => {
-    if (axios.isAxiosError(error)) {
-      const message = typeof error.response?.data === 'object' && error.response?.data !== null && 'message' in error.response.data
-        ? String(error.response.data.message)
-        : error.message
-      return Promise.reject(new Error(message))
+  async (error: unknown) => {
+    if (!axios.isAxiosError(error)) {
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
+
+    const requestConfig = error.config as RetryableRequestConfig | undefined
+    const refreshToken = getRefreshToken()
+    const shouldRefresh = error.response?.status === 401 && requestConfig && !requestConfig._retry && requestConfig.url !== '/auth/refresh' && refreshToken
+    if (shouldRefresh) {
+      requestConfig._retry = true
+      try {
+        const response = await apiClient.post<AuthTokens>('/auth/refresh', { refreshToken })
+        setAuthTokens(response.data)
+        requestConfig.headers.Authorization = `Bearer ${response.data.accessToken}`
+        return apiClient.request(requestConfig)
+      } catch (refreshError) {
+        clearAuthTokens()
+        if (axios.isAxiosError(refreshError)) {
+          return Promise.reject(new Error(errorMessage(refreshError)))
+        }
+        return Promise.reject(refreshError)
+      }
+    }
+
+    return Promise.reject(new Error(errorMessage(error)))
   },
 )
