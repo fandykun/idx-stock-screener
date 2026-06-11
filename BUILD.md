@@ -445,8 +445,8 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [ ] `@fastify/jwt`, `bcrypt`, `@types/bcrypt` installed in `apps/api`
 
 **Shared schemas**
-- [ ] `packages/shared/src/schemas/auth.ts` — `RegisterSchema`, `LoginSchema`, `RefreshSchema`
-- [ ] Types exported: `RegisterInput`, `LoginInput`
+- [x] `packages/shared/src/schemas/auth.ts` — `RegisterSchema`, `LoginSchema`, `RefreshSchema`
+- [x] Types exported: `RegisterInput`, `LoginInput`
 
 **JWT plugin**
 - [ ] `apps/api/src/plugins/jwt.ts` registers `@fastify/jwt`
