@@ -3,7 +3,6 @@ import helmet from '@fastify/helmet'
 import Fastify, { type FastifyInstance } from 'fastify'
 import { ZodError } from 'zod'
 import { type AuthStore, defaultAuthStore } from './data/authStore.js'
-import { AuthStubError } from './lib/authStub.js'
 import { jwtPlugin } from './plugins/jwt.js'
 import { websocketPlugin } from './plugins/websocket.js'
 import { alertRoutes } from './routes/alerts.js'
@@ -21,13 +20,14 @@ export interface CreateAppOptions {
 export async function createApp(options: CreateAppOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({ logger: { level: process.env.LOG_LEVEL ?? 'info' } })
   const jwtSecret = options.jwtSecret ?? process.env.JWT_SECRET
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET is required to create the API app')
+  }
 
   await app.register(helmet)
   await app.register(cors, { origin: process.env.WEB_ORIGIN ?? true })
-  if (jwtSecret) {
-    await app.register(jwtPlugin, { secret: jwtSecret })
-    await app.register(authRoutes, { authStore: options.authStore ?? defaultAuthStore })
-  }
+  await app.register(jwtPlugin, { secret: jwtSecret })
+  await app.register(authRoutes, { authStore: options.authStore ?? defaultAuthStore })
   await app.register(websocketPlugin)
   await app.register(stockRoutes)
   await app.register(screenerRoutes)
@@ -40,9 +40,6 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Fastify
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof ZodError) {
       return reply.status(400).send({ statusCode: 400, error: 'Bad Request', message: error.issues.map((issue) => issue.message).join('; ') })
-    }
-    if (error instanceof AuthStubError) {
-      return reply.status(error.statusCode).send({ statusCode: error.statusCode, error: 'Unauthorized', message: error.message })
     }
     const statusCode = typeof (error as { statusCode?: unknown }).statusCode === 'number' ? (error as { statusCode: number }).statusCode : 500
     const message = error instanceof Error ? error.message : 'Unexpected server error'

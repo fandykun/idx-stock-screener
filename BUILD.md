@@ -463,9 +463,9 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] `POST /auth/logout` — deletes refresh token from auth store
 
 **Auth stub removal**
-- [ ] All `getStubUserId(request)` replaced with `request.user.userId`
-- [ ] `preHandler: [app.authenticate]` added to all personal route handlers
-- [ ] `apps/api/src/lib/authStub.ts` deleted
+- [x] All `getStubUserId(request)` replaced with `request.user.userId`
+- [x] `preHandler: [app.authenticate]` added to all personal route handlers
+- [x] `apps/api/src/lib/authStub.ts` deleted
 - [ ] Frontend `apiClient.ts` — hardcoded `X-User-Id` header removed
 
 **Frontend**
@@ -483,7 +483,7 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] Access token expiry 15 minutes
 - [x] Refresh token expiry 7 days
 - [x] No auth secrets in any log output
-- [ ] `authStub.ts` no longer exists anywhere in the codebase
+- [x] `authStub.ts` no longer exists anywhere in the codebase
 
 **Manual test**
 ```bash

@@ -3,7 +3,7 @@ import { createApp } from '../app.js'
 
 describe('price WebSocket', () => {
   it('sends a snapshot of latest prices on connection', async () => {
-    const app = await createApp()
+    const app = await createApp({ jwtSecret: 'test-secret' })
     await app.listen({ port: 0 })
     const address = app.server.address()
     if (address === null || typeof address === 'string') throw new Error('Expected TCP server address')
