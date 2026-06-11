@@ -442,16 +442,16 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 ### Checklist
 
 **Dependencies**
-- [ ] `@fastify/jwt`, `bcrypt`, `@types/bcrypt` installed in `apps/api`
+- [x] `@fastify/jwt`, `bcrypt`, `@types/bcrypt` installed in `apps/api`
 
 **Shared schemas**
 - [x] `packages/shared/src/schemas/auth.ts` — `RegisterSchema`, `LoginSchema`, `RefreshSchema`
 - [x] Types exported: `RegisterInput`, `LoginInput`
 
 **JWT plugin**
-- [ ] `apps/api/src/plugins/jwt.ts` registers `@fastify/jwt`
-- [ ] `app.authenticate` preHandler hook available
-- [ ] `request.user` typed as `{ userId: string; email: string }`
+- [x] `apps/api/src/plugins/jwt.ts` registers `@fastify/jwt`
+- [x] `app.authenticate` preHandler hook available
+- [x] `request.user` typed as `{ userId: string; email: string }`
 
 **Auth routes**
 - [ ] `POST /auth/register` — creates user, hashes password (bcrypt cost 12), returns 201
