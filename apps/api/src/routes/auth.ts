@@ -1,9 +1,12 @@
-import { randomBytes } from 'node:crypto'
-import type { FastifyPluginAsync } from 'fastify'
-import { LoginSchema, RegisterSchema } from '@idx-screener/shared'
-import type { AuthStore } from '../data/authStore.js'
+import { createHash, randomBytes } from 'node:crypto'
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import { LoginSchema, RefreshSchema, RegisterSchema } from '@idx-screener/shared'
+import type { AuthStore, AuthUser } from '../data/authStore.js'
 import { DuplicateEmailError } from '../data/authStore.js'
 import { hashPassword, verifyPassword } from '../lib/password.js'
+
+const REFRESH_TOKEN_BYTES = 32
+const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000
 
 export interface AuthRoutesOptions {
   authStore: AuthStore
@@ -15,6 +18,33 @@ export class InvalidCredentialsError extends Error {
   constructor() {
     super('Invalid email or password')
   }
+}
+
+export class InvalidRefreshTokenError extends Error {
+  readonly statusCode = 401
+
+  constructor() {
+    super('Invalid refresh token')
+  }
+}
+
+function hashRefreshToken(refreshToken: string): string {
+  return createHash('sha256').update(refreshToken).digest('hex')
+}
+
+function createRefreshToken(): string {
+  return randomBytes(REFRESH_TOKEN_BYTES).toString('base64url')
+}
+
+async function issueTokenPair(app: FastifyInstance, authStore: AuthStore, user: AuthUser): Promise<{ accessToken: string; refreshToken: string }> {
+  const accessToken = app.jwt.sign({ userId: user.id, email: user.email }, { expiresIn: '15m' })
+  const refreshToken = createRefreshToken()
+  await authStore.saveRefreshToken({
+    tokenHash: hashRefreshToken(refreshToken),
+    userId: user.id,
+    expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL_MS),
+  })
+  return { accessToken, refreshToken }
 }
 
 export const authRoutes: FastifyPluginAsync<AuthRoutesOptions> = async (app, options) => {
@@ -33,7 +63,7 @@ export const authRoutes: FastifyPluginAsync<AuthRoutesOptions> = async (app, opt
     }
   })
 
-  app.post('/auth/login', async (request, reply) => {
+  app.post('/auth/login', async (request) => {
     const input = LoginSchema.parse(request.body)
     const user = await options.authStore.findByEmail(input.email)
     if (!user) {
@@ -45,8 +75,22 @@ export const authRoutes: FastifyPluginAsync<AuthRoutesOptions> = async (app, opt
       throw new InvalidCredentialsError()
     }
 
-    const accessToken = app.jwt.sign({ userId: user.id, email: user.email }, { expiresIn: '15m' })
-    const refreshToken = randomBytes(32).toString('base64url')
-    return reply.send({ accessToken, refreshToken })
+    return issueTokenPair(app, options.authStore, user)
+  })
+
+  app.post('/auth/refresh', async (request) => {
+    const input = RefreshSchema.parse(request.body)
+    const user = await options.authStore.consumeRefreshToken(hashRefreshToken(input.refreshToken), new Date())
+    if (!user) {
+      throw new InvalidRefreshTokenError()
+    }
+
+    return issueTokenPair(app, options.authStore, user)
+  })
+
+  app.post('/auth/logout', async (request, reply) => {
+    const input = RefreshSchema.parse(request.body)
+    await options.authStore.deleteRefreshToken(hashRefreshToken(input.refreshToken))
+    return reply.status(204).send()
   })
 }

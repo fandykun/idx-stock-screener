@@ -66,4 +66,37 @@ describe('auth routes', () => {
     expect(response.json().message).toBe('Invalid email or password')
     await app.close()
   })
+
+  it('rotates refresh tokens and rejects replayed tokens', async () => {
+    const authStore = new InMemoryAuthStore()
+    const app = await createApp({ authStore, jwtSecret: 'test-secret' })
+    await app.inject({ method: 'POST', url: '/auth/register', payload: { email: 'demo@idx-screener.app', password: 'correct-horse-1' } })
+    const login = await app.inject({ method: 'POST', url: '/auth/login', payload: { email: 'demo@idx-screener.app', password: 'correct-horse-1' } })
+    const originalRefreshToken = login.json().refreshToken as string
+
+    const refreshed = await app.inject({ method: 'POST', url: '/auth/refresh', payload: { refreshToken: originalRefreshToken } })
+    const replay = await app.inject({ method: 'POST', url: '/auth/refresh', payload: { refreshToken: originalRefreshToken } })
+
+    expect(refreshed.statusCode).toBe(200)
+    expect(refreshed.json()).toEqual({ accessToken: expect.any(String), refreshToken: expect.any(String) })
+    expect(refreshed.json().refreshToken).not.toBe(originalRefreshToken)
+    expect(replay.statusCode).toBe(401)
+    expect(replay.json().message).toBe('Invalid refresh token')
+    await app.close()
+  })
+
+  it('logs out by deleting the provided refresh token', async () => {
+    const authStore = new InMemoryAuthStore()
+    const app = await createApp({ authStore, jwtSecret: 'test-secret' })
+    await app.inject({ method: 'POST', url: '/auth/register', payload: { email: 'demo@idx-screener.app', password: 'correct-horse-1' } })
+    const login = await app.inject({ method: 'POST', url: '/auth/login', payload: { email: 'demo@idx-screener.app', password: 'correct-horse-1' } })
+    const refreshToken = login.json().refreshToken as string
+
+    const logout = await app.inject({ method: 'POST', url: '/auth/logout', payload: { refreshToken } })
+    const refreshAfterLogout = await app.inject({ method: 'POST', url: '/auth/refresh', payload: { refreshToken } })
+
+    expect(logout.statusCode).toBe(204)
+    expect(refreshAfterLogout.statusCode).toBe(401)
+    await app.close()
+  })
 })

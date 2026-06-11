@@ -458,9 +458,9 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] `POST /auth/register` — duplicate email returns 409
 - [x] `POST /auth/login` — correct credentials return `{ accessToken, refreshToken }`
 - [x] `POST /auth/login` — wrong password returns 401
-- [ ] `POST /auth/refresh` — returns new token pair, old token invalidated
-- [ ] `POST /auth/refresh` — replay attack (same token twice) returns 401
-- [ ] `POST /auth/logout` — deletes refresh token from DB
+- [x] `POST /auth/refresh` — returns new token pair, old token invalidated
+- [x] `POST /auth/refresh` — replay attack (same token twice) returns 401
+- [x] `POST /auth/logout` — deletes refresh token from auth store
 
 **Auth stub removal**
 - [ ] All `getStubUserId(request)` replaced with `request.user.userId`
@@ -481,7 +481,7 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 **Security**
 - [x] JWT secret from `process.env.JWT_SECRET` — never hardcoded
 - [x] Access token expiry 15 minutes
-- [ ] Refresh token expiry 7 days
+- [x] Refresh token expiry 7 days
 - [x] No auth secrets in any log output
 - [ ] `authStub.ts` no longer exists anywhere in the codebase
 
