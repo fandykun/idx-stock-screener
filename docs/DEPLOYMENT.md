@@ -39,14 +39,13 @@ Environment variables:
 ```bash
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 REDIS_URL=${{Redis.REDIS_URL}}
-API_PORT=${{PORT}}
 WEB_ORIGIN=https://your-web-service.up.railway.app
 LOG_LEVEL=info
 ```
 
 Notes:
 
-- The API reads `API_PORT`, not `PORT`, so map Railway's `PORT` into `API_PORT`.
+- The API reads `API_PORT`, then Railway's `PORT`, then falls back to `3000` for local development.
 - `DATABASE_URL` is currently required for Prisma seed/scraper operations and future persistence work. The Phase 5 API can still serve deterministic demo data without database reads.
 - `WEB_ORIGIN` should be the final public web origin to keep CORS narrow.
 
