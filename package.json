@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "corepack pnpm --parallel --filter api --filter web dev",
     "build": "corepack pnpm -r build",
+    "start": "corepack pnpm --filter api start",
     "test": "corepack pnpm -r test",
     "test:coverage": "corepack pnpm --filter @idx-screener/shared test:coverage",
     "smoke": "node scripts/smoke.mjs",

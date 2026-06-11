@@ -31,6 +31,12 @@ corepack pnpm install --frozen-lockfile && corepack pnpm --filter @idx-screener/
 Start command:
 
 ```bash
+corepack pnpm start
+```
+
+Equivalent API-only command:
+
+```bash
 corepack pnpm --filter api start
 ```
 
