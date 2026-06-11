@@ -454,10 +454,10 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] `request.user` typed as `{ userId: string; email: string }`
 
 **Auth routes**
-- [ ] `POST /auth/register` — creates user, hashes password (bcrypt cost 12), returns 201
-- [ ] `POST /auth/register` — duplicate email returns 409
-- [ ] `POST /auth/login` — correct credentials return `{ accessToken, refreshToken }`
-- [ ] `POST /auth/login` — wrong password returns 401
+- [x] `POST /auth/register` — creates user, hashes password (bcrypt cost 12), returns 201
+- [x] `POST /auth/register` — duplicate email returns 409
+- [x] `POST /auth/login` — correct credentials return `{ accessToken, refreshToken }`
+- [x] `POST /auth/login` — wrong password returns 401
 - [ ] `POST /auth/refresh` — returns new token pair, old token invalidated
 - [ ] `POST /auth/refresh` — replay attack (same token twice) returns 401
 - [ ] `POST /auth/logout` — deletes refresh token from DB
@@ -479,10 +479,10 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [ ] Logout clears state and redirects to `/`
 
 **Security**
-- [ ] JWT secret from `process.env.JWT_SECRET` — never hardcoded
-- [ ] Access token expiry 15 minutes
+- [x] JWT secret from `process.env.JWT_SECRET` — never hardcoded
+- [x] Access token expiry 15 minutes
 - [ ] Refresh token expiry 7 days
-- [ ] No auth secrets in any log output
+- [x] No auth secrets in any log output
 - [ ] `authStub.ts` no longer exists anywhere in the codebase
 
 **Manual test**
