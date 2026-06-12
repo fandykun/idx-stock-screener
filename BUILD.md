@@ -25,16 +25,14 @@ This file is your running build journal. Check off tasks as you complete them, l
 | 3 | React frontend — screener + stock detail | Complete | `a78c005` | **First visual demo** |
 | 4 | Watchlist, alerts, Telegram bot | Complete with auth stub and in-memory personal state | `86ecc78` | Personal flows demoable |
 | 5 | Polish and deployment | Complete: Railway API/web live and smoke-tested | `2fa092a` + deployment fixes | https://web-production-416351.up.railway.app |
-| 6 | Authentication | Not started | — | — |
+| 6 | Authentication | Source complete: JWT auth, refresh tokens, protected routes, frontend auth UX | `37eae63` + completion slice | Deployment pending |
 
 Current deployed Phase 5 baseline:
 
-- Latest pushed deployment-support commit: `2fa092a fix(web): allow Railway preview host`.
 - Live web URL: https://web-production-416351.up.railway.app
 - Live API health URL: https://api-production-9f35.up.railway.app/health
-- Verified commands: `corepack pnpm build`, `corepack pnpm test`, `git diff --check`, and `API_BASE_URL=https://api-production-9f35.up.railway.app WEB_BASE_URL=https://web-production-416351.up.railway.app corepack pnpm smoke`.
 - Railway project created with managed Postgres and Redis plus separate API and web services.
-- Phase 6 authentication is the next PRD phase.
+- Deployment drift noted after Phase 6 source completion: live API still returns 404 for `POST /auth/register` and still expects old `X-User-Id` auth on protected routes until Railway is redeployed from current `main`.
 
 ---
 
@@ -469,14 +467,14 @@ Replace the auth stub with real JWT auth. All personal routes properly secured. 
 - [x] Frontend `apiClient.ts` — hardcoded `X-User-Id` header removed
 
 **Frontend**
-- [ ] `useAuth.ts` hook — `login()`, `logout()`, `register()`, `isAuthenticated`
-- [x] `apiClient.ts` — request interceptor attaches `Authorization: Bearer ***`
+- [x] `useAuth.ts` hook — `login()`, `logout()`, `register()`, `isAuthenticated`
+- [x] `apiClient.ts` — request interceptor attaches the JWT bearer token
 - [x] `apiClient.ts` — response interceptor: on 401, POST `/auth/refresh`, retry once; on second 401, logout
-- [ ] `/login` page — form, submits, stores access token in memory, redirects to `/`
-- [ ] `/register` page — form, submits, redirects to `/login`
-- [ ] Protected route wrapper: redirects to `/login` when unauthenticated
-- [ ] On app load: silent refresh attempt to restore session
-- [ ] Logout clears state and redirects to `/`
+- [x] `/login` page — form, submits, stores access token in memory, redirects to `/`
+- [x] `/register` page — form, submits, redirects to `/login`
+- [x] Protected route wrapper: redirects to `/login` when unauthenticated
+- [x] On app load: silent refresh attempt to restore session
+- [x] Logout clears state and redirects to `/`
 
 **Security**
 - [x] JWT secret from `process.env.JWT_SECRET` — never hardcoded
@@ -499,7 +497,7 @@ curl -X POST http://localhost:3000/auth/login \
 
 # Protected route with JWT
 curl http://localhost:3000/watchlist \
-  -H "Authorization: Bearer <accessToken>"
+  -H "Authorization: Bearer ${ACCESS_TOKEN}"
 
 # Replay attack — second use of same refresh token
 curl -X POST http://localhost:3000/auth/refresh \
