@@ -6,6 +6,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const auth = useAuth()
   const location = useLocation()
 
+  if (auth.isCheckingSession || auth.isLoggingOut) return null
+
   if (!auth.isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
